@@ -130,7 +130,41 @@ app.get("/api/historial",(req,res)=>{
 
 });
 
+// WEBHOOK META
 
+const VERIFY_TOKEN = "toto_meta_2026";
+
+app.get("/webhook/meta", (req,res)=>{
+
+const mode = req.query["hub.mode"];
+const token = req.query["hub.verify_token"];
+const challenge = req.query["hub.challenge"];
+
+if(mode && token === VERIFY_TOKEN){
+
+console.log("Webhook Meta verificado");
+
+res.status(200).send(challenge);
+
+}else{
+
+res.sendStatus(403);
+
+}
+
+});
+
+
+app.post("/webhook/meta",(req,res)=>{
+
+console.log(
+"Mensaje recibido de Meta:",
+JSON.stringify(req.body)
+);
+
+res.sendStatus(200);
+
+});
 
 app.listen(PORT,()=>{
  console.log("🤖 TOTO IA activo en puerto "+PORT);
