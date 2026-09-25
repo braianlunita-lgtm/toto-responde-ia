@@ -157,12 +157,10 @@ res.sendStatus(403);
 
 app.post("/webhook/meta",(req,res)=>{
 
-console.log(
-"Mensaje recibido de Meta:",
-JSON.stringify(req.body)
-);
+console.log("===== EVENTO META RECIBIDO =====");
+console.log(JSON.stringify(req.body,null,2));
 
-res.sendStatus(200);
+res.status(200).send("EVENT_RECEIVED");
 
 });
 
