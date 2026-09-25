@@ -129,6 +129,32 @@ app.get("/api/historial",(req,res)=>{
   );
 async function enviarMensaje(destinatario, texto){
 
+const token = process.env.PAGE_ACCESS_TOKEN;
+
+const respuesta = await fetch(
+`https://graph.facebook.com/v26.0/me/messages?access_token=${token}`,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+recipient:{
+id: destinatario
+},
+message:{
+text:texto
+}
+})
+}
+);
+
+const datos = await respuesta.text();
+
+console.log("RESPUESTA FACEBOOK:", datos);
+
+}
+
 
 const token = process.env.PAGE_ACCESS_TOKEN;
 
