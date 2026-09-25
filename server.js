@@ -129,9 +129,10 @@ app.get("/api/historial",(req,res)=>{
   );
 async function enviarMensaje(destinatario, texto){
 
+
 const token = process.env.PAGE_ACCESS_TOKEN;
 
-await fetch(
+const respuesta = await fetch(
 `https://graph.facebook.com/v26.0/me/messages?access_token=${token}`,
 {
 method:"POST",
@@ -146,6 +147,9 @@ message:{
 text:texto
 }
 })
+const datos = await respuesta.text();
+
+console.log("RESPUESTA FACEBOOK:", datos);
 }
 
 // WEBHOOK META
