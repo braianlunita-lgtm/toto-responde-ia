@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const sqlite3 = require("sqlite3").verbose();
 
 const app = express();
 
@@ -8,45 +9,129 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
+const db = new sqlite3.Database("./toto.db");
 
-app.get("/", (req,res)=>{
-  res.send("🤖 TOTO RESPONDE IA funcionando");
+
+// Crear tablas
+db.serialize(() => {
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS clientes(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombre TEXT UNIQUE
+    )
+  `);
+
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS conversaciones(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      cliente TEXT,
+      mensaje TEXT,
+      respuesta TEXT,
+      fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
 });
 
 
-app.post("/api/chat", (req,res)=>{
+// Página principal
+app.get("/", (req,res)=>{
+  res.send("🤖 TOTO RESPONDE IA con memoria funcionando");
+});
 
-  const mensaje = req.body.mensaje || "";
 
-  let respuesta = "Hola 👋 Soy TOTO IA, estoy para ayudarte.";
+// Cerebro básico IA
+function responder(mensaje){
 
   const texto = mensaje.toLowerCase();
 
 
-  if(texto.includes("precio")){
-    respuesta = "Te ayudo con los precios disponibles 🍦";
+  if(texto.includes("comprar") || texto.includes("pedido")){
+    return "Perfecto 😊 Te ayudo con tu pedido.";
   }
+
+
+  if(texto.includes("precio") || texto.includes("cuanto")){
+    return "Te paso los precios disponibles 🍦";
+  }
+
 
   if(texto.includes("horario")){
-    respuesta = "Nuestro horario está configurado en el negocio.";
+    return "Nuestro horario está configurado en el negocio.";
   }
 
-  if(texto.includes("delivery")){
-    respuesta = "Sí 🛵 contamos con delivery.";
+
+  if(texto.includes("delivery") || texto.includes("envio")){
+    return "Sí 🛵 contamos con delivery.";
   }
 
-  if(texto.includes("comprar")){
-    respuesta = "Perfecto 😊 Seguimos con tu pedido.";
-  }
+
+  return "Hola 👋 Soy TOTO IA, estoy para ayudarte.";
+}
+
+
+
+// Chat con memoria
+app.post("/api/chat",(req,res)=>{
+
+  const cliente = req.body.cliente || "Cliente";
+  const mensaje = req.body.mensaje || "";
+
+
+  const respuesta = responder(mensaje);
+
+
+
+  // Guardar cliente
+  db.run(
+    "INSERT OR IGNORE INTO clientes(nombre) VALUES(?)",
+    [cliente]
+  );
+
+
+
+  // Guardar conversación
+  db.run(
+    `
+    INSERT INTO conversaciones(cliente,mensaje,respuesta)
+    VALUES(?,?,?)
+    `,
+    [
+      cliente,
+      mensaje,
+      respuesta
+    ]
+  );
+
 
 
   res.json({
-    respuesta: respuesta
+    respuesta: respuesta,
+    memoria: true
   });
+
 
 });
 
 
-app.listen(PORT, ()=>{
-  console.log("TOTO IA activo en puerto " + PORT);
+
+// Ver historial
+app.get("/api/historial",(req,res)=>{
+
+  db.all(
+    "SELECT * FROM conversaciones ORDER BY id DESC",
+    [],
+    (err,rows)=>{
+      res.json(rows);
+    }
+  );
+
+});
+
+
+
+app.listen(PORT,()=>{
+ console.log("🤖 TOTO IA activo en puerto "+PORT);
 });
