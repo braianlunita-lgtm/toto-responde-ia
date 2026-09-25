@@ -127,8 +127,26 @@ app.get("/api/historial",(req,res)=>{
       res.json(rows);
     }
   );
+async function enviarMensaje(destinatario, texto){
 
-});
+const token = process.env.PAGE_ACCESS_TOKEN;
+
+await fetch(
+`https://graph.facebook.com/v26.0/me/messages?access_token=${token}`,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+recipient:{
+id: destinatario
+},
+message:{
+text:texto
+}
+})
+}
 
 // WEBHOOK META
 
@@ -159,6 +177,22 @@ app.post("/webhook/meta",(req,res)=>{
 
 console.log("===== EVENTO META RECIBIDO =====");
 console.log(JSON.stringify(req.body,null,2));
+
+const evento = req.body.entry?.[0]?.messaging?.[0];
+
+if(evento?.message?.text){
+
+const usuario = evento.sender.id;
+const texto = evento.message.text;
+
+console.log("Mensaje:", texto);
+
+enviarMensaje(
+usuario,
+"Hola 👋 soy TOTO Responde IA. Ya estoy conectado correctamente 🤖"
+);
+
+}
 
 res.status(200).send("EVENT_RECEIVED");
 
