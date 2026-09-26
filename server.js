@@ -202,7 +202,7 @@ res.sendStatus(403);
 });
 
 
-app.post("/webhook/meta",(req,res)=>{
+app.post("/webhook/meta", async (req,res)=>{
 
 console.log("===== EVENTO META RECIBIDO =====");
 console.log(JSON.stringify(req.body,null,2));
