@@ -127,6 +127,9 @@ app.get("/api/historial",(req,res)=>{
       res.json(rows);
     }
   );
+  
+  });
+
 async function enviarMensaje(destinatario, texto){
 
 const token = process.env.PAGE_ACCESS_TOKEN;
