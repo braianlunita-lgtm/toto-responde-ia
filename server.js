@@ -156,28 +156,6 @@ console.log("RESPUESTA FACEBOOK:", datos);
 }
 
 
-const token = process.env.PAGE_ACCESS_TOKEN;
-
-const respuesta = await fetch(
-`https://graph.facebook.com/v26.0/me/messages?access_token=${token}`,
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-recipient:{
-id: destinatario
-},
-message:{
-text:texto
-}
-})
-const datos = await respuesta.text();
-
-console.log("RESPUESTA FACEBOOK:", datos);
-}
-
 // WEBHOOK META
 
 const VERIFY_TOKEN = "toto_meta_2026";
