@@ -158,6 +158,24 @@ console.log("RESPUESTA FACEBOOK:", datos);
 
 }
 
+async function responderIA(mensaje){
+
+mensaje = mensaje.toLowerCase();
+
+if(mensaje.includes("hola")){
+return "¡Hola! 👋 Soy TOTO Responde IA. ¿En qué puedo ayudarte?";
+}
+
+if(mensaje.includes("precio")){
+return "Claro 👍 Decime qué producto o servicio querés consultar y te paso la información.";
+}
+
+if(mensaje.includes("comprar")){
+return "Perfecto 🙌 ¿Qué producto estás buscando?";
+}
+
+return "Gracias por escribir 😊 Contame un poco más y te ayudo.";
+}
 
 // WEBHOOK META
 
@@ -198,9 +216,12 @@ const texto = evento.message.text;
 
 console.log("Mensaje:", texto);
 
-enviarMensaje(
+const respuesta = await responderIA(texto);
+
+await enviarMensaje(
 usuario,
-"Hola 👋 soy TOTO Responde IA. Ya estoy conectado correctamente 🤖"
+respuesta
+);
 );
 
 }
